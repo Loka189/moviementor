@@ -1,0 +1,7 @@
+{
+    "api_key":"32d52a38f77b039c8394a09b7e1b67d3",
+    "headers":{
+        "accept": "application/json",
+        "Authorization": "Bearer eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiIzMmQ1MmEzOGY3N2IwMzljODM5NGEwOWI3ZTFiNjdkMyIsInN1YiI6IjY0ZWZhMjRlZjAzMTc0MDEzODNjMzE5YSIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.9oLIDLZwJKOZPKpgq0RaXmRbgkFvm97gDiX-aN9YxTk"
+    }
+}
