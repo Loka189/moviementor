@@ -1,5 +1,5 @@
 from flask import Flask, request, jsonify
-import model
+import model2
 
 app = Flask(__name__)
 
@@ -8,7 +8,7 @@ def get_recommendations():
     if request.method == 'POST':
         data = request.json
         movie_name = data.get('movie')
-        recommendations = model.recommedate(movie_name)
+        recommendations = model2.recommedate(movie_name)
         response = jsonify(recommendations)
         print(response.json)  # Print the JSON data within the response to the Flask console
         return response
@@ -16,7 +16,7 @@ def get_recommendations():
         # Handle the GET request (if needed) or return an appropriate response
         data = request.args
         movie_name = data.get('movie')
-        recommendations = model.recommedate(movie_name)
+        recommendations = model2.recommedate(movie_name)
         response = jsonify(recommendations)
 
         return response
