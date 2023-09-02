@@ -1,14 +1,23 @@
+# importing required libraries
 import numpy as np
 import pandas as pd 
 import requests as req
 import json
+from sklearn.feature_extraction.text import CountVectorizer
+from sklearn.metrics.pairwise import cosine_similarity
+
+
 # Importing the dataset
 movies=pd.read_csv('tmdb5kPrePData.csv')
+titleList = movies['title'].tolist()
 
+# importing the api key and headers
 with open('confidential.json') as f:
     data = json.load(f)
     ApiKey=data['api_key']
     Headers=data['headers']
+
+# Creating a class for fetching the image url
 class ImageFetcher:
     def __init__(self):
         self.movieList=[]
@@ -24,23 +33,18 @@ class ImageFetcher:
             return imageurl
         else:
             return "error"
-import sklearn
-from sklearn.feature_extraction.text import CountVectorizer
-cv=CountVectorizer(max_features=5000)
 
+cv=CountVectorizer(max_features=5000)
 vectorized_array = cv.fit_transform(movies['tags']).toarray()
-from sklearn.metrics.pairwise import cosine_similarity
 similarity=cosine_similarity(vectorized_array)
 
-titleList = movies['title'].tolist()
+# Creating a function for recommending the movies
+def recommedate(movie):#movie is coming from the user(client side)
 
-
-
-def recommedate(movie):#movie is a string which is coming from the user
-
-    # If the movie user entered is in the list of movies we have then we will not have to do all the api calls and all that stuff we will just have to find the index of that movie and then find the similarity of that movie with all the other movies and then sort them and then return the top 5 movies
+    # If the movie user entered is in the list of movies we have, then we will not have to do all the api calls and all that stuff we will just have to find the index of that movie and then find the similarity of that movie with all the other movies and then sort them and then return the top 5 movies
     if movie in titleList:
        movies=pd.read_csv('tmdb5kPrePData.csv')
+       
        mainlist=[]
        movie_index = movies[movies['title'] == movie].index[0]
        distances = similarity[movie_index]
@@ -52,11 +56,10 @@ def recommedate(movie):#movie is a string which is coming from the user
           mainlist.append(movies.iloc[i[0]].title)
 
         
-       #return mainlist
        movieData=pd.DataFrame({'title':mainlist})
               
-       object1=ImageFetcher()
-       movieData['imageurl']=movieData['title'].apply(object1.fetchImage1)
+       object=ImageFetcher()
+       movieData['imageurl']=movieData['title'].apply(object.fetchImage1)
        # Now return the mmoviedata as Dictionary
        return movieData.to_dict('records')
        
@@ -65,11 +68,7 @@ def recommedate(movie):#movie is a string which is coming from the user
 
         # first we will have to find the movie id of the movie user entered by movie name using the api call
         movies=pd.read_csv('tmdb5kPrePData.csv')
-        base_url = "https://api.themoviedb.org/3/search/movie"
-        api_key = ApiKey
-        query = movie
-
-        url = f"{base_url}?query={query}&api_key={api_key}"
+        url='https://api.themoviedb.org/3/search/movie?query='+movie+'&api_key='+ApiKey
         response=req.get(url)
         if response.status_code==200:
             mainJSON=response.json()
@@ -86,9 +85,8 @@ def recommedate(movie):#movie is a string which is coming from the user
                 crew=[]
 
                 # Lets get the genres of the movie
-                base_url_for_genres="https://api.themoviedb.org/3/movie/"
-                main_url_for_genres=f"{base_url_for_genres}{movie_id}?api_key={api_key}" 
-                response_for_genres=req.get(main_url_for_genres) 
+                genres_url='https://api.themoviedb.org/3/movie/'+str(movie_id)+'?api_key='+ApiKey
+                response_for_genres=req.get(genres_url) 
                 if response_for_genres.status_code==200:
                     json_for_genres=response_for_genres.json()
                     gen=json_for_genres['genres']
@@ -96,11 +94,9 @@ def recommedate(movie):#movie is a string which is coming from the user
                         genres.append(i['name'])
                 # we got the genres now lets get the keywords of the movie
                 
-
-                base_url_for_keywords="https://api.themoviedb.org/3/movie/" 
-                main_url_for_keywords=f"{base_url_for_keywords}{movie_id}/keywords" 
+                keywords_url='https://api.themoviedb.org/3/movie/'+str(movie_id)+'/keywords' 
                 headers = Headers
-                response_for_keywords = req.get(main_url_for_keywords, headers=headers)
+                response_for_keywords = req.get(keywords_url, headers=headers)
                 if response_for_keywords.status_code==200:
                     jsonfk=response_for_keywords.json()
                     keyWL=jsonfk['keywords']
@@ -158,15 +154,6 @@ def recommedate(movie):#movie is a string which is coming from the user
 
                 #return mainList
                 movieData=pd.DataFrame({'title':mainList})
-                # def fetchImage(name):
-                #     url='https://api.themoviedb.org/3/search/movie?query='+name+'&api_key=32d52a38f77b039c8394a09b7e1b67d3'
-                #     response=req.get(url)
-                #     if response.status_code==200:
-                #         json=response.json()
-                #         results=json['results']
-                #         poster_path=results[0]['poster_path']
-                #         imageurl='https://image.tmdb.org/t/p/w342'+poster_path
-                #         return imageurl
                 object1=ImageFetcher()
                 movieData['imageurl']=movieData['title'].apply(object1.fetchImage1)
                 return movieData.to_dict('records')
@@ -176,7 +163,7 @@ def recommedate(movie):#movie is a string which is coming from the user
             return "Check your internet connection"
 
 
-x=recommedate('Oppenheimer')
+x=recommedate('The Flash')
 print(x)
 
 
