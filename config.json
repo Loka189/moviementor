@@ -1,0 +1,7 @@
+{
+    "api_key":"Your API_KEY",
+    "headers":{
+        "accept": "application/json",
+        "Authorization": "Your Authorization"
+    }
+}
