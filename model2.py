@@ -163,7 +163,7 @@ def recommedate(movie):#movie is coming from the user(client side)
             return "Check your internet connection"
 
 
-x=recommedate('The Flash')
+x=recommedate('Joker')
 print(x)
 
 

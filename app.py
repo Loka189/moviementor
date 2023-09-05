@@ -1,8 +1,8 @@
 from flask import Flask, request, jsonify
 import model2
-
+from flask_cors import CORS
 app = Flask(__name__)
-
+CORS(app)
 @app.route('/get_recommendations', methods=['GET', 'POST'])
 def get_recommendations():
     if request.method == 'POST':
